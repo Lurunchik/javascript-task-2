@@ -5,11 +5,18 @@
  * Реализован метод importFromCsv
  */
 exports.isStar = true;
+var PHONE_LENGTH = 10;
 
 /**
  * Телефонная книга
  */
-var phoneBook;
+var phoneBook = {};
+
+function parsePhone(phone) {
+    if (phone.length == PHONE_LENGTH) {
+        return parseInt(phone, 10);
+    }
+}
 
 /**
  * Добавление записи в телефонную книгу
@@ -18,7 +25,16 @@ var phoneBook;
  * @param {String} email
  */
 exports.add = function (phone, name, email) {
-
+    if (!name) {
+        console.log('record was not added: name is required');
+        return false;
+    }
+    var phoneNumber = parsePhone(phone);
+    if (isNaN(phoneNumber) || phoneNumber in phoneBook) {
+        return false;
+    }
+    phoneBook[phoneNumber] = {'name': name, 'email': email};
+    return true;
 };
 
 /**
@@ -28,7 +44,19 @@ exports.add = function (phone, name, email) {
  * @param {String} email
  */
 exports.update = function (phone, name, email) {
-
+    var phoneNumber = parsePhone(phone);
+    if (!(phoneNumber in phoneBook)) {
+        return false;
+    }
+    if (name) {
+        phoneBook[phoneNumber].name = name;
+    }
+    if (isNaN(email)) {
+        delete phoneBook[email].email;
+    } else {
+        phoneBook[email].email = email;
+    }
+    return true;
 };
 
 /**
